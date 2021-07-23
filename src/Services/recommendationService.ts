@@ -29,16 +29,9 @@ export async function updateScore(id: number, updateType: string) {
 
 export async function randomRecommendation() {
 
-    let smthRandom;
     let params:string;
 
     if( Math.random() > 0.3) {
-        smthRandom = true
-    } else {
-        smthRandom = false
-    }
-    
-    if(smthRandom) {
         params = "> 10";
     } else {
         params = "<= 10";
@@ -51,10 +44,8 @@ export async function randomRecommendation() {
     if(!recommendation) {
 
         params = "> -5";
-
         recommendation = await recommendationRepository.selectedRecomendation(params);
     }
-
     return recommendation;
 }
 
