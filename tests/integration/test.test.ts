@@ -5,7 +5,7 @@ import app from "../../src/app";
 import connection from "../../src/database";
 import { insertRecommendation } from "../../src/Ropositories/recommendationRepository";
 import { generateRecommendation } from '../utills/Factory';
-import { findRecommendationById } from "../utills/genericFunctions";
+import { findRecommendationById } from "../../src/Ropositories/genericFunctions";
 
 afterAll(async () => {
   await connection.query(`TRUNCATE songs RESTART IDENTITY`);
@@ -124,7 +124,7 @@ describe("GET /recommendations/random", () => {
     
   });
 
-  it("should answer an recommendation with score <= 10", async () => {
+  it("should answer a recommendation with score <= 10", async () => {
 
     const body = await generateRecommendation(1);
     await insertRecommendation(body[0].name, body[0].youtubeLink, 1);
@@ -135,7 +135,7 @@ describe("GET /recommendations/random", () => {
     expect(response.body.score).toBe(1);
   });
 
-  it("should answer an recommendation with score > 10", async () => {
+  it("should answer a recommendation with score > 10", async () => {
 
     const body = await generateRecommendation(1);
     await insertRecommendation(body[0].name, body[0].youtubeLink, 15);

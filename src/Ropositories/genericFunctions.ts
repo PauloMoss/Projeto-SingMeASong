@@ -1,4 +1,4 @@
-import connection from "../../src/database";
+import connection from "../database";
 
 
 export async function updateItems(updateType: string, currentScore: number, id:number) {

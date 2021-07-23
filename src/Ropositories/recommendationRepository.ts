@@ -1,5 +1,5 @@
 import connection from "../database";
-import { updateItems, findRecommendationById } from "../../tests/utills/genericFunctions";
+import { updateItems, findRecommendationById } from "./genericFunctions";
 
 export async function insertRecommendation(name: string, youtubeLink: string, score: number) {
 
