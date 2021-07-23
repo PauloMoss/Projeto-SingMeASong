@@ -80,3 +80,16 @@ export async function getRandomRecommendation (req: Request, res: Response ) {
         res.sendStatus(500)
     }
 }
+
+export async function getMostWantedRecommendations (req: Request, res: Response ) {
+    try{
+        const limitAmount = Number(req.params.amount);
+
+        const topSongs = await recommendationService.topRecommendations(limitAmount);
+        return res.send(topSongs);
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(500)
+    }
+}

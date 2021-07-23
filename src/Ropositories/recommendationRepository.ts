@@ -36,7 +36,15 @@ export async function findRecommendationAndUpdateScore(id:number, updateType:str
 }
 
 export async function selectedRecomendation(params:string) {
+
     const recommendatedSong = await connection.query(`SELECT * FROM songs WHERE score ${params} ORDER BY RANDOM() LIMIT 1`);
 
     return recommendatedSong.rows[0];
+}
+
+export async function selectedTopScoreRecomendations(limit:number) {
+
+    const songsWithBestScore = await connection.query(`SELECT * FROM songs ORDER BY score DESC LIMIT $1`,[limit]);
+
+    return songsWithBestScore.rows;
 }

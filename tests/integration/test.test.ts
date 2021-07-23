@@ -20,39 +20,39 @@ describe("POST /recommendations", () => {
 
   it("should answer with status 201 for valid recommendation", async () => {
 
-    const body = await generateRecommendation();
+    const body = await generateRecommendation(1);
 
-    const response = await supertest(app).post("/recommendations").send(body);
+    const response = await supertest(app).post("/recommendations").send(body[0]);
 
     expect(response.status).toBe(201);
   });
 
   it("should answer with status 422 for invalid youtube link", async () => {
 
-    const body = await generateRecommendation();
-    body.youtubeLink = "isNotYoutubeLink";
+    const body = await generateRecommendation(1);
+    body[0].youtubeLink = "isNotYoutubeLink";
 
-    const response = await supertest(app).post("/recommendations").send(body);
+    const response = await supertest(app).post("/recommendations").send(body[0]);
 
     expect(response.status).toBe(422);
   });
 
   it("should answer with status 400 for empty params", async () => {
 
-    const body = await generateRecommendation();
-    body.name = "";
+    const body = await generateRecommendation(1);
+    body[0].name = "";
 
-    const response = await supertest(app).post("/recommendations").send(body);
+    const response = await supertest(app).post("/recommendations").send(body[0]);
 
     expect(response.status).toBe(400);
   });
 
   it("should answer with status 409 for already created recommendation", async () => {
 
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, 1);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, 1);
 
-    const response = await supertest(app).post("/recommendations").send(body);
+    const response = await supertest(app).post("/recommendations").send(body[0]);
 
     expect(response.status).toBe(409);
   });
@@ -63,8 +63,8 @@ describe("POST /recommendations/:id/upvote", () =>{
   beforeEach(async () => {
 
     await connection.query(`TRUNCATE songs RESTART IDENTITY`);
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, 1);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, 1);
 
   });
 
@@ -90,8 +90,8 @@ describe("POST /recommendations/:id/downvote", () =>{
 
   it("should answer with status 200 for valid downvote recommendation", async () => {
 
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, 1);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, 1);
 
     const response = await supertest(app).post("/recommendations/1/downvote");
 
@@ -100,8 +100,8 @@ describe("POST /recommendations/:id/downvote", () =>{
 
   it("should answer with status 200 for valid downvote recommendation and delete recommendation", async () => {
 
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, -5);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, -5);
 
     const response = await supertest(app).post("/recommendations/1/downvote");
     const recommendation = await findRecommendationById(1);
@@ -126,8 +126,8 @@ describe("GET /recommendations/random", () => {
 
   it("should answer an recommendation with score <= 10", async () => {
 
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, 1);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, 1);
 
     const response = await supertest(app).get("/recommendations/random");
 
@@ -137,8 +137,8 @@ describe("GET /recommendations/random", () => {
 
   it("should answer an recommendation with score > 10", async () => {
 
-    const body = await generateRecommendation();
-    await insertRecommendation(body.name, body.youtubeLink, 15);
+    const body = await generateRecommendation(1);
+    await insertRecommendation(body[0].name, body[0].youtubeLink, 15);
 
     const response = await supertest(app).get("/recommendations/random");
 
@@ -153,4 +153,26 @@ describe("GET /recommendations/random", () => {
     expect(response.status).toBe(404);
   });
   
+})
+
+
+describe("GET /recommendations/top/:amount", () => {
+  beforeEach(async () => {
+    await connection.query(`TRUNCATE songs RESTART IDENTITY`);
+  });
+
+  it("should answer with top recommendations list ordered by score and status 200 ", async () => {
+
+    const body = await generateRecommendation(3);
+
+    for( let i = 0; i < body.length; i++){
+      await insertRecommendation(body[i].name, body[i].youtubeLink, i + 10);
+    }
+
+    const response = await supertest(app).get("/recommendations/top/2");
+
+    expect(response.status).toBe(200);
+    expect(response.body[0].score).toBe(12);
+    expect(response.body[1].score).toBe(11);
+  });
 })

@@ -57,3 +57,9 @@ export async function randomRecommendation() {
 
     return recommendation;
 }
+
+export async function topRecommendations(limit:number) {
+    const topRecommendationList = await recommendationRepository.selectedTopScoreRecomendations(limit);
+
+    return topRecommendationList;
+}
