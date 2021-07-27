@@ -1,5 +1,5 @@
 import connection from "../database";
-
+import { Recommendation } from '../Protocols/interface';
 
 export async function updateItems(updateType: string, currentScore: number, id:number) {
 
@@ -16,7 +16,7 @@ export async function updateItems(updateType: string, currentScore: number, id:n
     await connection.query(`UPDATE songs SET score = $1 WHERE id = $2`, [newScore, id]);
 }
 
-export async function findRecommendationById(id:number) {
+export async function findRecommendationById(id:number):Promise<Recommendation> {
     
     const result = await connection.query(`SELECT * FROM songs WHERE id = $1`,[id]);
     

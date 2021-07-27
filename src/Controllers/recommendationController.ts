@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import getYouTubeID from 'get-youtube-id';
 
+import { expectedRecommendationBody } from '../Protocols/interface';
 import * as recommendationService from '../Services/recommendationService';
 
 export async function postRecommendation (req: Request, res: Response ) {
     try{
-        const { name, youtubeLink } = req.body;
+        const { name, youtubeLink }: expectedRecommendationBody = req.body;
 
         const youtubeId = getYouTubeID(youtubeLink);
 

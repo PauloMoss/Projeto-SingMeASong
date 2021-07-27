@@ -1,5 +1,6 @@
 import connection from "../database";
 import { updateItems, findRecommendationById } from "./genericFunctions";
+import { Recommendation } from '../Protocols/interface';
 
 export async function insertRecommendation(name: string, youtubeLink: string, score: number) {
 
@@ -35,14 +36,14 @@ export async function findRecommendationAndUpdateScore(id:number, updateType:str
     return false;
 }
 
-export async function selectedRecomendation(params:string) {
+export async function selectedRecomendation(params:string):Promise<Recommendation>  {
 
     const recommendatedSong = await connection.query(`SELECT * FROM songs WHERE score ${params} ORDER BY RANDOM() LIMIT 1`);
 
     return recommendatedSong.rows[0];
 }
 
-export async function selectedTopScoreRecomendations(limit:number) {
+export async function selectedTopScoreRecomendations(limit:number):Promise<Recommendation[]> {
 
     const songsWithBestScore = await connection.query(`SELECT * FROM songs ORDER BY score DESC LIMIT $1`,[limit]);
 
